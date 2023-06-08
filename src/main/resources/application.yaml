@@ -1,0 +1,11 @@
+server:
+  port: 8081
+spring:
+  datasource:
+    username: ${POSTGRES_USERNAME:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5433/postgres?currentSchema=social_network}
+  flyway:
+    baseline-on-migrate: true
+    clean-disabled: true
+    out-of-order: true
