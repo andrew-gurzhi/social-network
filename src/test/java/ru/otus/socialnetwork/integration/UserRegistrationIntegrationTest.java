@@ -13,12 +13,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.otus.socialnetwork.model.Sex;
 import ru.otus.socialnetwork.model.UserDto;
 import ru.otus.socialnetwork.service.UserService;
+import ru.otus.socialnetwork.testcontainer.AbstractContainerBaseTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class UserRegistrationIntegrationTest {
+class UserRegistrationIntegrationTest extends AbstractContainerBaseTest {
     @Autowired
     private UserService userService;
     @Autowired
@@ -28,7 +29,7 @@ public class UserRegistrationIntegrationTest {
     PasswordEncoder passwordEncoder;
 
     @Test
-    public void testRegisterUser() {
+    void testRegisterUser() {
         // создаем тестового пользователя
         UserDto user = new UserDto();
         user.setFirstName("John");

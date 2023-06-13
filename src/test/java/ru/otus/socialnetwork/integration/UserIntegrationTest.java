@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class UserIntegrationTest extends AbstractContainerBaseTest {
+class UserIntegrationTest extends AbstractContainerBaseTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
