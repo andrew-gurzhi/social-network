@@ -10,6 +10,8 @@ import ru.otus.socialnetwork.service.UserService;
 
 import javax.validation.Valid;
 
+import java.util.List;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 
@@ -28,9 +30,18 @@ public class UserController {
         return ResponseEntity.ok().body(createdUserId);
     }
 
-    @GetMapping()
-    public ResponseEntity<UserDto> getUser(@RequestParam String id) {
+    @GetMapping("/get/{id}")
+    public ResponseEntity<UserDto> getUser(@PathVariable("id") String id) {
         UserDto user = userService.getUserById(id);
+        if (user != null) {
+            return ResponseEntity.ok().body(user);
+        } else return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<UserDto>> searchUser(@RequestParam String firstName,
+                                                    @RequestParam String secondName) {
+        List<UserDto> user = userService.searchUser(firstName, secondName);
         if (user != null) {
             return ResponseEntity.ok().body(user);
         } else return ResponseEntity.notFound().build();

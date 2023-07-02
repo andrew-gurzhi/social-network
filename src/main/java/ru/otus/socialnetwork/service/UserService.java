@@ -9,6 +9,7 @@ import ru.otus.socialnetwork.mapper.UserMapper;
 import ru.otus.socialnetwork.model.UserDto;
 import ru.otus.socialnetwork.storage.repository.UserRepository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -31,5 +32,17 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserDto getUserById(String id) {
         return userMapper.map(userRepository.findById(id).orElse(null));
+    }
+
+    /**
+     * Метод поиска пользователя по по префиксу имени и фамилии
+     *
+     * @param firstName  часть имени
+     * @param secondName часть фамилии
+     */
+    @Transactional(readOnly = true)
+    public List<UserDto> searchUser(String firstName, String secondName) {
+        return userRepository.findByPrefixes(firstName, secondName)
+                .stream().map(userMapper::map).toList();
     }
 }
