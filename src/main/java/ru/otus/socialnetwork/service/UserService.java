@@ -1,7 +1,6 @@
 package ru.otus.socialnetwork.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +13,6 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -44,5 +42,21 @@ public class UserService {
     public List<UserDto> searchUser(String firstName, String secondName) {
         return userRepository.findByPrefixes(firstName, secondName)
                 .stream().map(userMapper::map).toList();
+    }
+
+    /**
+     * Метод добавления друга пользователю
+     *
+     * @param calledUserId id пользователя сделавшего запрос
+     * @param friendId     идентификатор друга
+     */
+    @Transactional
+    public void setFriend(String calledUserId, String friendId) {
+        var fetchedUser = userRepository.findById(calledUserId).orElseThrow();
+        var friend = userRepository.findById(friendId).orElseThrow();
+        fetchedUser.getFriends().add(friend);
+        friend.getFriends().add(fetchedUser);
+        userRepository.save(fetchedUser);
+        userRepository.save(friend);
     }
 }

@@ -10,6 +10,7 @@ import ru.otus.socialnetwork.storage.model.UserEntity;
 public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "friends", ignore = true)
     UserEntity map(UserDto source);
 
     UserDto map(UserEntity source);
