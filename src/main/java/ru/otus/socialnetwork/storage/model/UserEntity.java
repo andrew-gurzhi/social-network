@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Table(name = "users")
 @Entity
@@ -30,6 +31,14 @@ public class UserEntity {
     private String uriPages;
     // Пароль
     private String password;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_friends",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "friend_id")
+    )
+    private Set<UserEntity> friends;
 }
 
 

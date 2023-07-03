@@ -1,4 +1,4 @@
-package ru.otus.socialnetwork;
+package ru.otus.socialnetwork.configuration;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
