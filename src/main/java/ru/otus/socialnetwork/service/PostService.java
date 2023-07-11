@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.socialnetwork.mapper.PostMapper;
 import ru.otus.socialnetwork.model.PostDto;
-import ru.otus.socialnetwork.queueHandler.TaskQueueManager;
+import ru.otus.socialnetwork.queueadapter.PostQueueAdapter;
 import ru.otus.socialnetwork.storage.model.PostEntity;
 import ru.otus.socialnetwork.storage.model.UserEntity;
 import ru.otus.socialnetwork.storage.repository.PostRepository;
@@ -20,10 +20,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 //Сервис для работы с постами
 public class PostService {
+    public static final int PAGE = 0;
+    public static final int PAGE_SIZE = 20;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final PostMapper postMapper;
-    private final TaskQueueManager taskQueueManager;
+    private final PostQueueAdapter postQueueAdapter;
 
     private final ManualCacheManager manualCacheManager;
 
@@ -40,7 +42,9 @@ public class PostService {
         post.setId(UUID.randomUUID().toString());
         post.setText(postText);
         post.setUserId(userId);
-        return postRepository.save(post).getId();
+        var postId =  postRepository.save(post).getId();
+        sendPostEventToQueue(userId.getId(), postText);
+        return postId;
     }
 
     /**
@@ -58,14 +62,12 @@ public class PostService {
     }
 
     /**
-     * Добавление задачи поиск постов в очередь
-     *
-     * @param userId = идентификатор пользователя сделавшего запрос
-     * @param offset оффсет
-     * @param limit  лимит для пагинации
+     * Отпрака сообщения об создании поста в очередь
+     * @param userId индентификатор пользователя сделавшего пост
+     * @param postText текст поста
      */
-    public void addToFeedQueue(String userId, Integer offset, Integer limit) {
-        taskQueueManager.addToFeedQueue(userId, offset, limit);
+    public void sendPostEventToQueue(String userId, String postText) {
+        postQueueAdapter.sendPostToFriends(userId, postText);
     }
 
     /**
@@ -81,20 +83,18 @@ public class PostService {
         if (cachedPosts != null) {
             return cachedPosts;
         }
-        return getFeed(userId, offset, limit);
+        return getFeed(userId);
     }
 
     /**
      * Получение ленты постов из базы данных
      *
      * @param userId = идентификатор пользователя сделавшего запрос
-     * @param offset оффсет
-     * @param limit  лимит для пагинации
      * @return лента постов
      */
     @Transactional(readOnly = true)
-    public List<PostDto> getFeed(String userId, Integer offset, Integer limit) {
+    public List<PostDto> getFeed(String userId) {
         var friendIds = userRepository.findById(userId).orElseThrow().getFriends().stream().map(UserEntity::getId).toList();
-        return postRepository.findAllByUserIds(friendIds, PageRequest.of(offset, limit)).stream().map(postMapper::map).toList();
+        return postRepository.findAllByUserIds(friendIds, PageRequest.of(PAGE, PAGE_SIZE)).stream().map(postMapper::map).toList();
     }
 }

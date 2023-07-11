@@ -3,9 +3,16 @@ server:
 spring:
   datasource:
     username: ${POSTGRES_USERNAME:postgres}
-    password: ${POSTGRES_PASSWORD:postgres}
+    password: ${POSTGRES_PASSWORD:pass}
     url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/postgres?currentSchema=social_network}
   flyway:
     baseline-on-migrate: true
     clean-disabled: true
     out-of-order: true
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVER:localhost:29092}
+    consumer:
+      group-id: my-group
+
+application:
+  post-feed-topic: post-feed-topic

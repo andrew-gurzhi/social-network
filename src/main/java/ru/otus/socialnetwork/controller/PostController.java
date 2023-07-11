@@ -30,7 +30,6 @@ public class PostController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         var user = ((UserEntity) authentication.getPrincipal());
         var createdUserId = postService.createPost(postText, user);
-        postService.addToFeedQueue(user.getId(), 0, 20);
         return ResponseEntity.ok().body(createdUserId);
     }
 
